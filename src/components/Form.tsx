@@ -1,8 +1,12 @@
-import { parseTemplate } from "../lib/parseTemplate";
+
 import { ElementRenderer } from "./ElementRenderer";
 
+import { groupsLayout, groups, elements} from "../model/model";
+
+console.log("Groups:", groups);
+console.log("Elements:", elements);
+
 export const Form = () => {
-  const { elementMap, groupOrder, elementOrder, grouped } = parseTemplate();
 
   // console.log("Element Map:", elementMap);
   // console.log("Group Order:", groupOrder);
@@ -11,8 +15,8 @@ export const Form = () => {
 
   return (
     <form>
-      {groupOrder.map((groupId) => {
-        const group = grouped[groupId];
+      {groupsLayout.map((groupId) => {
+        const group = groups[groupId];
 
         if (!group) return null;
 
@@ -20,12 +24,11 @@ export const Form = () => {
           <fieldset key={groupId} class="gcds-fieldset">
             <legend>{group.group.titleEn}</legend>
             {group.elements.map((elementId) => {
-              const element = elementMap[elementId];
+              const element = elements[elementId];
               if (!element) return null;
 
               return (
                 <div
-                  key={elementId}
                   class={element.isVisible ? "visible" : "hidden"}
                 >
                   <ElementRenderer element={element} />
