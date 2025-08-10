@@ -1,0 +1,73 @@
+import template from "../templates/get-support-2025-08-10.json";
+
+import { isElementVisible } from "./visibility";
+
+
+export const parseTemplate = () => {
+  const values = {
+    2: "Tim Arney",
+    10: "tim@line37.com",
+    12: "Other ",
+    currentGroup: "start",
+    //currentGroup: "b0e74a96-fa9e-43f4-8573-4b4ba23d65e5",
+  };
+
+  // Build a map of elements by id for quick lookup
+  const elementMap = {};
+  template.elements.forEach((el) => {
+    //
+
+    const formRecord = {
+      id: "1234",
+      securityAttribute: "Unclassified",
+      isPublished: true,
+      form: {
+        layout: [2, 8, 9, 10, 11, 12, 13, 14],
+        titleEn: template.titleEn,
+        titleFr: template.titleFr,
+        elements: template.elements,
+        name: template.name,
+      },
+    };
+
+
+    const isVisible = isElementVisible(
+      values.currentGroup,
+      template.groups,
+      values,
+      formRecord,
+      el
+    );
+
+    //
+
+    el.isVisible = isVisible;
+    el.value = values[el.id] || "";
+    elementMap[String(el.id)] = el;
+  });
+
+  // Add the start group as the first group
+  template.groupsLayout.unshift("start");
+
+  // Order groups by groupsLayout, fallback to Object.keys if missing
+  const groupOrder = template.groupsLayout;
+
+  // Order elements by layout
+  const elementOrder = Array.isArray(template.layout)
+    ? template.layout.map(String)
+    : [];
+
+  const grouped = {};
+  for (const groupId of groupOrder) {
+    const group = template.groups[groupId];
+    if (!group || !Array.isArray(group.elements)) continue;
+    // Pick group elements in the order they appear in layout
+    const sortedElementIds = elementOrder.filter((id) =>
+      group.elements.includes(id)
+    );
+
+    grouped[groupId] = { group, elements: sortedElementIds };
+  }
+
+  return { elementMap, groupOrder, elementOrder, grouped };
+};
