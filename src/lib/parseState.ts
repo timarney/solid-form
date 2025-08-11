@@ -1,9 +1,5 @@
 import { isElementVisible } from "./visibility";
 
-import templateJson from "../templates/get-support-2025-08-10.json";
-
-export const template = templateJson;
-
 export const getFormRecord = (template) => {
   const formRecord = {
     id: "1234",
@@ -36,8 +32,10 @@ export const parseState = (values, template, formRecord) => {
     elementMap[String(el.id)] = el;
   });
 
-  // Add the start group as the first group
-  template.groupsLayout.unshift("start");
+  // Add the start group as the first group if it doesn't exist
+  if (!template.groupsLayout.includes("start")) {
+    template.groupsLayout.unshift("start");
+  }
 
   // Order groups by groupsLayout, fallback to Object.keys if missing
   const groupOrder = template.groupsLayout;

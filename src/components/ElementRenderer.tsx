@@ -12,12 +12,8 @@ export function ElementRenderer({ element }: { element: any }) {
   const { properties } = element;
 
   const updateValue = (e) => {
-
-
     const id = e.target.id;
     const value = e.target.value;
-
-    console.log("Updating value for", id, "to", value);
 
     setValues((prevValues) => ({
       ...prevValues,
@@ -25,7 +21,9 @@ export function ElementRenderer({ element }: { element: any }) {
     }));
   };
 
-  console.log(values());
+  if(!element.isVisible){
+    return null; // If the element is not visible, return null
+  }
 
   // Render the element based on its type
   switch (element.type) {
@@ -34,24 +32,28 @@ export function ElementRenderer({ element }: { element: any }) {
     case "textField":
       return (
         <gcds-input
-          id="test"
+          id={element.id}
           label={properties.titleEn}
           value={element.value}
+          on:gcdsChange={updateValue}
         />
       );
     case "textArea":
       return (
         <gcds-textarea
-          id="test-textarea"
-          textarea-id="textarea-props"
-          name="textarea-name"
+          id={element.id}
+          textarea-id={element.id}
+          name={element.id}
           hint="Hint / Example message."
           label={properties.titleEn}
+          value={element.value}
+          on:gcdsChange={updateValue}
         />
       );
     case "radio":
       return (
         <gcds-radios
+          value={values()[element.id]}
           id={element.id}
           name="radio"
           on:gcdsChange={updateValue}

@@ -25,7 +25,7 @@ const App: Component = () => {
             eiusmod tempor incididunt ut labore et dolore magna aliqua. Turp is
             egestas maecenas pharetra convallis posuere morbi leo urna.
           </gcds-text>
-          <Form groupData={groups()} />
+          <Form groupData={groups} />
         </section>
       </gcds-container>
 

@@ -86,7 +86,6 @@ export const mapIdsToValues = (
     if (!Array.isArray(value)) {
       const choiceId = findChoiceIndexByValue(formElements, id, value);
       if (choiceId > -1) {
-        console.log(`Found choiceId: ${id}.${choiceId}`);
         return `${id}.${choiceId}`;
       }
       return;

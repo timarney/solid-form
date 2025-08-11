@@ -1,30 +1,26 @@
+
+import templateJson from "../templates/get-support-2025-08-10.json";
+
+export const template = templateJson;
+
 import { parseState } from "../lib/parseState";
-import { template } from "../lib/parseState";
 import { createSignal } from "solid-js";
 
 import { getFormRecord } from "../lib/parseState";
 
-const formRecord = getFormRecord(template);
+export const formRecord = getFormRecord(template);
 
 export const [values, setValues] = createSignal({
   2: "Tim Arney",
   10: "tim@line37.com",
   12: "Other ",
-  //currentGroup: "start",
-  currentGroup: "b0e74a96-fa9e-43f4-8573-4b4ba23d65e5",
+  currentGroup: "start",
+  //currentGroup: "b0e74a96-fa9e-43f4-8573-4b4ba23d65e5",
 });
 
-const { elementMap, groupOrder, grouped } = parseState(
-  values(),
-  template,
-  formRecord
-);
+const { groupOrder, grouped } = parseState(values(), template, formRecord);
 
+// elements should be reactive to values
 
-console.log(grouped, elementMap)
-
-export const elements = elementMap;
 export const groupsLayout = groupOrder;
-
-// Create signals for elements and groups
-export const [groups, setGroups] = createSignal(grouped);
+export const groups = grouped;
