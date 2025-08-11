@@ -1,12 +1,12 @@
-const getOptions = (id, properties) => {
-  return properties.choices.map((option, index) => ({
+const getOptions = (id: string, properties: any) => {
+  return properties.choices.map((option: any, index: number) => ({
     label: option.en,
     id: `${id}.${index}`,
     value: `${id}.${index}`,
   }));
 };
 
-export function ElementRenderer({ element }) {
+export function ElementRenderer({ element }: { element: any }) {
   const { properties } = element;
 
   // Render the element based on its type
@@ -14,10 +14,29 @@ export function ElementRenderer({ element }) {
     case "richText":
       return <div>{properties.descriptionEn}</div>;
     case "textField":
-      return <gcds-input label={properties.titleEn} value={element.value} />;
+      return (
+        <gcds-input
+          id="test"
+          on:gcdsBlur={(e) => {
+            console.log("Input field blurred", {
+              id: e.target.id,
+              val: e.target.value,
+            });
+          }}
+          label={properties.titleEn}
+          value={element.value}
+        />
+      );
     case "textArea":
       return (
         <gcds-textarea
+          id="test-textarea"
+          on:gcdsBlur={(e) => {
+            console.log("Textarea blurred", {
+              id: e.target.id,
+              val: e.target.value,
+            });
+          }}
           textarea-id="textarea-props"
           name="textarea-name"
           hint="Hint / Example message."

@@ -2,8 +2,9 @@ import type { Component } from "solid-js";
 
 import styles from "./App.module.css";
 
-import Counter from "./components/Counter";
 import { Form } from "./components/Form";
+
+import { groups } from "./store/store";
 
 const App: Component = () => {
   return (
@@ -24,8 +25,7 @@ const App: Component = () => {
             eiusmod tempor incididunt ut labore et dolore magna aliqua. Turp is
             egestas maecenas pharetra convallis posuere morbi leo urna.
           </gcds-text>
-          <Counter />
-          <Form />
+          <Form groupData={groups()} />
         </section>
       </gcds-container>
 
