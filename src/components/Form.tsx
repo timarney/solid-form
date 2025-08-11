@@ -1,38 +1,29 @@
 import { createMemo } from "solid-js";
 import { ElementRenderer } from "./ElementRenderer";
-import { parseState } from "../lib/parseState";
+import { parseState } from "../lib/parseTemplate";
 
-import { groupsLayout, formRecord, template } from "../store/store";
+import { groupsLayout, template } from "../store/store";
 import { values } from "../store/store";
 
-export const Form = ({ groupData }: { groupData: any }) => {
-  const elements = createMemo(() => {
-    const { elementMap } = parseState(values(), template, formRecord);
-    return elementMap;
-  });
+import type { FormElement } from "@gcforms/types";
+
+export const Form = ({ groupData }: { groupData: Record<string, any> }) => {
+  const { elementMap } = parseState(template);
 
   return (
     <div>
       <form id="my-form">
-        {groupsLayout.map((groupId) => {
+        {groupsLayout.map((groupId: string) => {
           const group = groupData[groupId];
-
           if (!group) return null;
-
           if (groupId !== values().currentGroup) return null;
-
           return (
-            <fieldset key={groupId} class="gcds-fieldset">
+            <fieldset class="gcds-fieldset">
               <legend>{group.group.titleEn}</legend>
-              {group.elements.map((elementId) => {
-                const element = elements()[elementId];
+              {group.elements.map((elementId: string) => {
+                const element = elementMap[elementId];
                 if (!element) return null;
-
-                return (
-                  <div class={element.isVisible ? "visible" : "hidden"}>
-                    <ElementRenderer element={element} />
-                  </div>
-                );
+                return <ElementRenderer element={element as FormElement} />;
               })}
             </fieldset>
           );

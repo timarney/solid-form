@@ -1,7 +1,8 @@
-import { isElementVisible } from "./visibility";
+import type { FormElement } from "@gcforms/types";
 
-export const getFormRecord = (template) => {
-  const formRecord = {
+export function getFormRecord(template: any) {
+  // @ts-ignore: SecurityAttribute type mismatch workaround
+  const formRecord: any = {
     id: "1234",
     securityAttribute: "Unclassified",
     isPublished: true,
@@ -13,22 +14,17 @@ export const getFormRecord = (template) => {
       name: template.name,
     },
   };
-
   return formRecord;
-};
+}
 
-export const parseState = (values, template, formRecord) => {
+
+export const parseState = (
+  template: any,
+) => {
   // Build a map of elements by id for quick lookup
-  const elementMap = {};
-  template.elements.forEach((el) => {
-    el.isVisible = isElementVisible(
-      values.currentGroup,
-      template.groups,
-      values,
-      formRecord,
-      el
-    );
-    el.value = values[el.id] || "";
+  const elementMap: Record<string, FormElement> = {};
+  (template.elements as FormElement[]).forEach((el) => {
+    // Only set static properties; do not set isVisible or value here
     elementMap[String(el.id)] = el;
   });
 
@@ -38,22 +34,21 @@ export const parseState = (values, template, formRecord) => {
   }
 
   // Order groups by groupsLayout, fallback to Object.keys if missing
-  const groupOrder = template.groupsLayout;
+  const groupOrder: string[] = template.groupsLayout;
 
   // Order elements by layout
-  const elementOrder = Array.isArray(template.layout)
+  const elementOrder: string[] = Array.isArray(template.layout)
     ? template.layout.map(String)
     : [];
 
-  const grouped = {};
+  const grouped: Record<string, { group: any; elements: string[] }> = {};
   for (const groupId of groupOrder) {
     const group = template.groups[groupId];
     if (!group || !Array.isArray(group.elements)) continue;
     // Pick group elements in the order they appear in layout
-    const sortedElementIds = elementOrder.filter((id) =>
+    const sortedElementIds = elementOrder.filter((id: string) =>
       group.elements.includes(id)
     );
-
     grouped[groupId] = { group, elements: sortedElementIds };
   }
 
