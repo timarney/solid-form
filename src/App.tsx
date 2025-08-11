@@ -17,12 +17,7 @@ const App: Component = () => {
         tag="main"
       >
         <section>
-          <gcds-heading tag="h1">Basic page</gcds-heading>
-          <gcds-text>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Turp is
-            egestas maecenas pharetra convallis posuere morbi leo urna.
-          </gcds-text>
+          <gcds-heading tag="h1">Support Form</gcds-heading>
           <Form />
         </section>
       </gcds-container>

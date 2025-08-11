@@ -1,5 +1,6 @@
 import type { FormElement } from "@gcforms/types";
 
+/* Helpers  */
 const getOptions = (id: string, properties: any) => {
   return properties.choices.map((option: any, index: number) => ({
     label: option.en,
@@ -7,6 +8,7 @@ const getOptions = (id: string, properties: any) => {
     value: option.en,
   }));
 };
+
 
 export function ElementRenderer({
   element,

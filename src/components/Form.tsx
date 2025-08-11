@@ -1,22 +1,24 @@
-import { createSignal } from "solid-js";
-
-import { formRecord, groups, template } from "../store/store";
-import { checkVisibilityRecursive } from "../lib/visibility";
+import { createSignal, For } from "solid-js";
 import type { FormElement } from "@gcforms/types";
 
+/* Helpers */
+import { parseTemplate } from "../lib/parseTemplate";
+import { checkVisibilityRecursive } from "../lib/visibility";
+
+/* Data */
+import { formRecord, grouped, template } from "../store/store";
+
+/* Components */
 import { ElementRenderer } from "./ElementRenderer";
 
-import { parseTemplate } from "../lib/parseTemplate";
+const [values, setValues] = createSignal({
+  2: "Tim Arney",
+  10: "tim@line37.com",
+});
+
+const [currentGroup, setCurrentGroup] = createSignal("start");
 
 export function Form() {
-  const [values, setValues] = createSignal({
-    2: "Tim Arney",
-    10: "tim@line37.com",
-    12: "Other ",
-    //currentGroup: "start",
-    currentGroup: "b0e74a96-fa9e-43f4-8573-4b4ba23d65e5",
-  });
-
   const updateValue = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const id = target.id;
@@ -27,33 +29,56 @@ export function Form() {
     }));
   };
 
-  const { elementMap } = parseTemplate(template);
+  const updateCurrentGroup = (newGroup: string) => {
+    setCurrentGroup(newGroup);
+  };
 
-  const group = groups[values().currentGroup];
-  const elements = group ? group.elements : [];
+  const getNextAction = () => {
+    let nextGroup = template.groups[currentGroup()].nextAction;
+
+    if (nextGroup === "review" || nextGroup === "end") {
+      nextGroup = "";
+    }
+
+    return { next: nextGroup, text: nextGroup ? "Next" : "Submit" };
+  };
+
+  const { elementMap } = parseTemplate(template);
 
   return (
     <form>
-      {elements.map((elementId: string) => {
-        const element = elementMap[elementId];
-        if (!element) return null;
-        const visible = checkVisibilityRecursive(
-          formRecord,
-          element,
-          values(),
-          {}
-        );
+      <h1>{grouped[currentGroup()]?.group?.titleEn || "Form Title"}</h1>
+      <For
+        each={grouped[currentGroup()]?.elements.filter((id) => {
+          const isVisible = checkVisibilityRecursive(
+            formRecord,
+            elementMap[id],
+            values(),
+            {}
+          );
+          return isVisible;
+        })}
+      >
+        {(elementId: string) => {
+          const element = elementMap[elementId];
+          if (!element) return null;
+          return (
+            <ElementRenderer
+              value={values()[elementId]}
+              handler={updateValue}
+              element={element as FormElement}
+            />
+          );
+        }}
+      </For>
 
-        if (!visible) return null;
-
-        return (
-          <ElementRenderer
-            value={values()[elementId]}
-            handler={updateValue}
-            element={element as FormElement}
-          />
-        );
-      })}
+      <gcds-button
+        onClick={() => {
+          updateCurrentGroup(getNextAction().next);
+        }}
+      >
+        {getNextAction().text}
+      </gcds-button>
     </form>
   );
 }
