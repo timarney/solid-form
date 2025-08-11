@@ -1,6 +1,3 @@
-import { values, setValues, formRecord } from "../store/store";
-import { createMemo } from "solid-js";
-import { checkVisibilityRecursive } from "../lib/visibility";
 import type { FormElement } from "@gcforms/types";
 
 const getOptions = (id: string, properties: any) => {
@@ -11,29 +8,16 @@ const getOptions = (id: string, properties: any) => {
   }));
 };
 
-export function ElementRenderer({ element }: { element: FormElement }) {
+export function ElementRenderer({
+  element,
+  handler,
+  value,
+}: {
+  value?: string;
+  element: FormElement;
+  handler: (e: Event) => void;
+}) {
   const { properties } = element;
-
-  // Compute visibility reactively for this element only
-  const isVisible = createMemo(() =>
-    checkVisibilityRecursive(formRecord, element, values())
-  );
-
-  const updateValue = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    const id = target.id;
-    const value = target.value;
-    setValues((prevValues) => ({
-      ...prevValues,
-      [id]: value,
-    }));
-  };
-
-  if (!isVisible()) {
-    return null;
-  }
-
-  const v = values() as Record<string, string>;
 
   switch (element.type) {
     case "richText":
@@ -43,8 +27,8 @@ export function ElementRenderer({ element }: { element: FormElement }) {
         <gcds-input
           id={element.id}
           label={properties.titleEn}
-          value={v[element.id] || ""}
-          on:gcdsChange={updateValue}
+          value={value || ""}
+          on:gcdsChange={handler}
         />
       );
     case "textArea":
@@ -55,17 +39,17 @@ export function ElementRenderer({ element }: { element: FormElement }) {
           name={element.id}
           hint="Hint / Example message."
           label={properties.titleEn}
-          value={v[element.id] || ""}
-          on:gcdsChange={updateValue}
+          value={value || ""}
+          on:gcdsChange={handler}
         />
       );
     case "radio":
       return (
         <gcds-radios
-          value={v[element.id] || ""}
+          value={value || ""}
           id={element.id}
           name="radio"
-          on:gcdsChange={updateValue}
+          on:gcdsChange={handler}
           legend={properties.titleEn}
           options={getOptions(String(element.id), properties)}
         />

@@ -4,8 +4,6 @@ import styles from "./App.module.css";
 
 import { Form } from "./components/Form";
 
-import { groups } from "./store/store";
-
 const App: Component = () => {
   return (
     <div class={styles.App}>
@@ -25,7 +23,7 @@ const App: Component = () => {
             eiusmod tempor incididunt ut labore et dolore magna aliqua. Turp is
             egestas maecenas pharetra convallis posuere morbi leo urna.
           </gcds-text>
-          <Form groupData={groups} />
+          <Form />
         </section>
       </gcds-container>
 

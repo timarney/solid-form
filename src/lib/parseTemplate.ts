@@ -18,7 +18,7 @@ export function getFormRecord(template: any) {
 }
 
 
-export const parseState = (
+export const parseTemplate = (
   template: any,
 ) => {
   // Build a map of elements by id for quick lookup
