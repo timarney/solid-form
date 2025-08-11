@@ -13,8 +13,8 @@ export function Form() {
     2: "Tim Arney",
     10: "tim@line37.com",
     12: "Other ",
-    currentGroup: "start",
-    //currentGroup: "b0e74a96-fa9e-43f4-8573-4b4ba23d65e5",
+    //currentGroup: "start",
+    currentGroup: "b0e74a96-fa9e-43f4-8573-4b4ba23d65e5",
   });
 
   const updateValue = (e: Event) => {
@@ -32,21 +32,28 @@ export function Form() {
   const group = groups[values().currentGroup];
   const elements = group ? group.elements : [];
 
-  return elements.map((elementId: string) => {
-    const element = elementMap[elementId];
-    if (!element) return null;
-    const visible = checkVisibilityRecursive(formRecord, element, values(), {});
+  return (
+    <form>
+      {elements.map((elementId: string) => {
+        const element = elementMap[elementId];
+        if (!element) return null;
+        const visible = checkVisibilityRecursive(
+          formRecord,
+          element,
+          values(),
+          {}
+        );
 
-    console.log(`Element ${elementId} visibility: ${visible}`);
+        if (!visible) return null;
 
-    if (!visible) return null;
-
-    return (
-      <ElementRenderer
-        value={values()[elementId]}
-        handler={updateValue}
-        element={element as FormElement}
-      />
-    );
-  });
+        return (
+          <ElementRenderer
+            value={values()[elementId]}
+            handler={updateValue}
+            element={element as FormElement}
+          />
+        );
+      })}
+    </form>
+  );
 }
