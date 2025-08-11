@@ -5,3 +5,7 @@
 .gcds-fieldset{
     border: none;
 }
+
+form{
+    margin-bottom: 50px;
+}
