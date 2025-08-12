@@ -12,6 +12,7 @@ declare module "solid-js" {
       "gcds-input": any;
       "gcds-radios": any;
       "gcds-textarea": any;
+      "gcds-error-summary": any;
     }
   }
 }

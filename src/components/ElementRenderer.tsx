@@ -9,11 +9,11 @@ const getOptions = (id: string, properties: any) => {
   }));
 };
 
-
 export function ElementRenderer({
   element,
   handler,
   value,
+  error,
 }: {
   value?: string;
   element: FormElement;
@@ -27,7 +27,9 @@ export function ElementRenderer({
     case "textField":
       return (
         <gcds-input
+          error-message={error}
           id={element.id}
+          input-id={element.id}
           label={properties.titleEn}
           value={value || ""}
           on:gcdsChange={handler}
@@ -36,7 +38,8 @@ export function ElementRenderer({
     case "textArea":
       return (
         <gcds-textarea
-          id={element.id}
+          error-message={error}
+          input-id={element.id}
           textarea-id={element.id}
           name={element.id}
           hint="Hint / Example message."
@@ -48,8 +51,9 @@ export function ElementRenderer({
     case "radio":
       return (
         <gcds-radios
+          error-message={error}
           value={value || ""}
-          id={element.id}
+          input-id={element.id}
           name="radio"
           on:gcdsChange={handler}
           legend={properties.titleEn}

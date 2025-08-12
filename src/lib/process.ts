@@ -67,3 +67,24 @@ export const validateOnSubmit = (
 
   return errors;
 };
+
+/* Wrapper function to validate form responses - to ensure signature consistency  for validateOnSubmit  */
+export const validate = ({
+  values,
+  currentGroup,
+  formRecord,
+}: {
+  values: Responses;
+  currentGroup: string;
+  formRecord: PublicFormRecord;
+}) => {
+  values.currentGroup = currentGroup;
+
+  console.log("Validating values:", values);
+
+  const errors = validateOnSubmit(values, {
+    formRecord,
+    t: (str) => str,
+  });
+  return errors;
+};

@@ -11,6 +11,7 @@ import { type DateObject } from "../types";
 import { isInputTooLong } from "./text";
 import { isValidDate } from "./date";
 import { isIndividualFileSizeValid, isFileExtensionValid } from "./file";
+import { getRegexByType } from "./regex";
 
 export const isFieldResponseValid = (
   value: unknown,

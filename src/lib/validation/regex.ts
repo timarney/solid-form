@@ -2,7 +2,7 @@
  * getRegexByType [private] defines a mapping between the types of fields that need to be validated
  * Also, defines the regex for validation, with a matching bilingual error message
  */
-const getRegexByType = (
+export const getRegexByType = (
   type: string | undefined,
   t: (str: string) => string,
   value?: string

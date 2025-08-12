@@ -1,26 +1,18 @@
 import type { FormElement } from "@gcforms/types";
 
 export function getFormRecord(template: any) {
-  // @ts-ignore: SecurityAttribute type mismatch workaround
   const formRecord: any = {
     id: "1234",
     securityAttribute: "Unclassified",
     isPublished: true,
     form: {
-      layout: template.layout,
-      titleEn: template.titleEn,
-      titleFr: template.titleFr,
-      elements: template.elements,
-      name: template.name,
+      ...template,
     },
   };
   return formRecord;
 }
 
-
-export const parseTemplate = (
-  template: any,
-) => {
+export const parseTemplate = (template: any) => {
   // Build a map of elements by id for quick lookup
   const elementMap: Record<string, FormElement> = {};
   (template.elements as FormElement[]).forEach((el) => {

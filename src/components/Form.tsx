@@ -1,4 +1,4 @@
-import { createSignal, For } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import type { FormElement } from "@gcforms/types";
 
 /* Helpers */
@@ -11,12 +11,13 @@ import { formRecord, grouped, template } from "../store/store";
 /* Components */
 import { ElementRenderer } from "./ElementRenderer";
 
-const [values, setValues] = createSignal({
-  2: "Tim Arney",
-  10: "tim@line37.com",
-});
+/* Process data */
+import { validate } from "../lib/process";
 
+/* Signals */
+const [values, setValues] = createSignal({});
 const [currentGroup, setCurrentGroup] = createSignal("start");
+const [errors, setErrors] = createSignal<Record<string, unknown>>({});
 
 export function Form() {
   const updateValue = (e: Event) => {
@@ -48,6 +49,11 @@ export function Form() {
   return (
     <form>
       <h1>{grouped[currentGroup()]?.group?.titleEn || "Form Title"}</h1>
+      <div>
+        <Show when={errors() && Object.keys(errors()).length > 0}>
+          <gcds-error-summary error-links={errors()} />
+        </Show>
+      </div>
       <For
         each={grouped[currentGroup()]?.elements.filter((id) => {
           const isVisible = checkVisibilityRecursive(
@@ -61,19 +67,36 @@ export function Form() {
       >
         {(elementId: string) => {
           const element = elementMap[elementId];
+          console.log("Rendering element:", element);
+          console.log("Error:", errors[elementId]);
           if (!element) return null;
           return (
-            <ElementRenderer
-              value={values()[elementId]}
-              handler={updateValue}
-              element={element as FormElement}
-            />
+            <div>
+              <span>{elementId}</span>
+              <ElementRenderer
+                value={values()[elementId] as string}
+                handler={updateValue}
+                error={errors()[elementId] ? errors()[elementId] : null}
+                element={element as FormElement}
+              />
+            </div>
           );
         }}
       </For>
 
       <gcds-button
         onClick={() => {
+          const errors = validate({
+            values: values(),
+            currentGroup: currentGroup(),
+            formRecord,
+          });
+
+          if (errors && Object.keys(errors).length > 0) {
+            setErrors(errors);
+            return;
+          }
+
           updateCurrentGroup(getNextAction().next);
         }}
       >
