@@ -18,6 +18,7 @@ export function ElementRenderer({
   value?: string;
   element: FormElement;
   handler: (e: Event) => void;
+  error?: () => string | null;
 }) {
   const { properties } = element;
 
@@ -27,7 +28,7 @@ export function ElementRenderer({
     case "textField":
       return (
         <gcds-input
-          error-message={error}
+          error-message={error ? error() : null}
           id={element.id}
           input-id={element.id}
           label={properties.titleEn}
@@ -38,7 +39,7 @@ export function ElementRenderer({
     case "textArea":
       return (
         <gcds-textarea
-          error-message={error}
+          error-message={error ? error() : null}
           input-id={element.id}
           textarea-id={element.id}
           name={element.id}
@@ -51,7 +52,7 @@ export function ElementRenderer({
     case "radio":
       return (
         <gcds-radios
-          error-message={error}
+          error-message={error ? error() : null}
           value={value || ""}
           input-id={element.id}
           name="radio"

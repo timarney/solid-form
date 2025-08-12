@@ -67,16 +67,13 @@ export function Form() {
       >
         {(elementId: string) => {
           const element = elementMap[elementId];
-          console.log("Rendering element:", element);
-          console.log("Error:", errors[elementId]);
           if (!element) return null;
           return (
             <div>
-              <span>{elementId}</span>
               <ElementRenderer
                 value={values()[elementId] as string}
                 handler={updateValue}
-                error={errors()[elementId] ? errors()[elementId] : null}
+                error={() => errors()[elementId] || null}
                 element={element as FormElement}
               />
             </div>
