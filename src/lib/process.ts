@@ -80,8 +80,6 @@ export const validate = ({
 }) => {
   values.currentGroup = currentGroup;
 
-  console.log("Validating values:", values);
-
   const errors = validateOnSubmit(values, {
     formRecord,
     t: (str) => str,

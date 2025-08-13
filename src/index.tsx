@@ -1,15 +1,43 @@
+import { Router, Route } from "@solidjs/router";
+
 /* @refresh reload */
-import { render } from 'solid-js/web';
+import { render } from "solid-js/web";
 
-import './index.css';
-import App from './App';
+import "./index.css";
 
-const root = document.getElementById('root');
+import { Form } from "./pages/Form";
+import { Confirm } from "./pages/Confirm";
 
-if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
-  throw new Error(
-    'Root element not found. Did you forget to add it to your index.html? Or maybe the id attribute got misspelled?',
+const Layout = (props) => {
+  return (
+    <>
+      <div>
+        <gcds-header lang-href="#" skip-to-href="#main-content"></gcds-header>
+        <gcds-container
+          id="main-content"
+          main-container
+          size="xl"
+          centered
+          tag="main"
+        >
+          {props.children}
+        </gcds-container>
+      </div>
+      <gcds-footer
+        display="compact"
+        contextual-heading="Canadian Digital Service"
+        contextual-links='{ "Why GC Notify": "#","Features": "#", "Activity on GC Notify": "#"}'
+      ></gcds-footer>
+    </>
   );
-}
+};
 
-render(() => <App />, root!);
+render(
+  () => (
+    <Router root={Layout}>
+      <Route path="/" component={Form} />
+      <Route path="/confirm" component={Confirm} />
+    </Router>
+  ),
+  document.getElementById("root")
+);

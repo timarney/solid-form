@@ -1,4 +1,5 @@
 import { createEffect, createSignal, For, Show } from "solid-js";
+import { useNavigate } from "@solidjs/router";
 import type { FormElement } from "@gcforms/types";
 
 /* Helpers */
@@ -9,36 +10,28 @@ import { checkVisibilityRecursive } from "../lib/visibility";
 import { formRecord, grouped, template } from "../store/store";
 
 /* Components */
-import { ElementRenderer } from "./ElementRenderer";
+import { ElementRenderer } from "../components/ElementRenderer";
 
 /* Process data */
 import { validate } from "../lib/process";
+
+import {
+  scrollToErrorSummary,
+  getValueFromEvent,
+} from "../lib/helpers/helpers";
 
 /* Signals */
 const [values, setValues] = createSignal({});
 const [currentGroup, setCurrentGroup] = createSignal("start");
 const [errors, setErrors] = createSignal<Record<string, unknown>>({});
 
-const scrollToErrorSummary = () => {
-  const errorSummary = document.getElementById("error-summary");
-  if (errorSummary) {
-    const rect = errorSummary.getBoundingClientRect();
-    const scrollTop = window.pageYOffset + rect.top - 20;
-    window.scrollTo({ top: scrollTop, behavior: "smooth" });
-  }
-};
-
 export function Form() {
-  const updateValue = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    const id = target.id;
+  const navigate = useNavigate();
 
-    const cleanId = id.replace("el-", "");
-
-    const value = target.value;
+  const updateValue = (val: { id: string; value: string }) => {
     setValues((prevValues) => ({
       ...prevValues,
-      [cleanId]: value,
+      [val.id]: val.value,
     }));
   };
 
@@ -68,15 +61,15 @@ export function Form() {
 
   createEffect(() => {
     console.log("Form Values:", values());
-    console.log("Errors:", errors());
-    console.log("Mapped Errors:", mappedErrors());
   });
 
   const { elementMap } = parseTemplate(template);
 
   return (
     <form>
-      <h1>{grouped[currentGroup()]?.group?.titleEn || "Form Title"}</h1>
+      <gcds-heading tag="h1">
+        {grouped[currentGroup()]?.group?.titleEn || "Form Title"}
+      </gcds-heading>
       <div>
         <Show when={errors() && Object.keys(errors()).length > 0}>
           <gcds-error-summary
@@ -104,7 +97,9 @@ export function Form() {
             <div>
               <ElementRenderer
                 value={values()[elementId] as string}
-                handler={updateValue}
+                handler={(e) => {
+                  updateValue(getValueFromEvent(e));
+                }}
                 error={() => errors()[elementId] || null}
                 element={element as FormElement}
               />
@@ -130,7 +125,21 @@ export function Form() {
           // reset errors
           setErrors({});
 
-          updateCurrentGroup(getNextAction().next);
+          const nextAction = getNextAction();
+          if (nextAction.next) {
+            updateCurrentGroup(nextAction.next);
+          } else {
+            // Navigate to submit page when no next action
+            navigate("/confirm");
+          }
+
+          // Focus H1
+          const heading = document.querySelector("gcds-heading");
+          if (heading) {
+            heading.scrollIntoView({ behavior: "smooth" });
+            // focus H1
+            heading.focus();
+          }
         }}
       >
         {getNextAction().text}
