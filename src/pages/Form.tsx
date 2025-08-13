@@ -9,18 +9,17 @@ import { formRecord, grouped, template } from "../store/store";
 /* Components */
 import { ElementRenderer } from "../components/ElementRenderer";
 
-
 /* Helpers */
 import {
   scrollToErrorSummary,
   getValueFromEvent,
   parseTemplate,
-  validate
+  validate,
 } from "../lib/helpers";
 
 /* Signals */
-const [values, setValues] = createSignal({});
-const [currentGroup, setCurrentGroup] = createSignal("start");
+const [values, setValues] = createSignal<Record<string, string>>({});
+const [currentGroup, setCurrentGroup] = createSignal<string>("start");
 const [errors, setErrors] = createSignal<Record<string, unknown>>({});
 
 export function Form() {
@@ -37,18 +36,20 @@ export function Form() {
     setCurrentGroup(newGroup);
   };
 
-  const getNextAction = () => {
-    let nextGroup = template.groups[currentGroup()].nextAction;
+  const getNextAction = (): { next: string; text: string } => {
+    // Ensure type safety for group lookup
 
-    if (nextGroup === "review" || nextGroup === "end") {
-      nextGroup = "";
-    }
+    const groupKey = currentGroup() as keyof typeof template.groups;
+    const group = template.groups[
+      groupKey
+    ] as (typeof template.groups)[typeof groupKey];
 
-    return { next: nextGroup, text: nextGroup ? "Next" : "Submit" };
+    // @ts-ignore
+    return { next: group?.nextAction, text: "Next" };
   };
 
-  const mappedErrors = () => {
-    return Object.keys(errors()).reduce(
+  const mappedErrors = (): Record<string, unknown> => {
+    return Object.keys(errors()).reduce<Record<string, unknown>>(
       (acc, key) => ({
         ...acc,
         [`#el-${key}`]: errors()[key],
@@ -59,6 +60,8 @@ export function Form() {
 
   createEffect(() => {
     console.log("Form Values:", values());
+    console.log("Current Group:", currentGroup());
+    console.log("Errors:", errors());
   });
 
   const { elementMap } = parseTemplate(template);
@@ -78,7 +81,7 @@ export function Form() {
         </Show>
       </div>
       <For
-        each={grouped[currentGroup()]?.elements.filter((id) => {
+        each={grouped[currentGroup()]?.elements.filter((id: string) => {
           const isVisible = checkVisibilityRecursive(
             formRecord,
             elementMap[id],
@@ -95,9 +98,10 @@ export function Form() {
             <div>
               <ElementRenderer
                 value={values()[elementId] as string}
-                handler={(e) => {
+                handler={(e: Event | CustomEvent) => {
                   updateValue(getValueFromEvent(e));
                 }}
+                // @ts-ignore
                 error={() => errors()[elementId] || null}
                 element={element as FormElement}
               />
@@ -107,15 +111,16 @@ export function Form() {
       </For>
 
       <gcds-button
-        onClick={() => {
-          const errors = validate({
+        onClick={(e: MouseEvent) => {
+          e.preventDefault();
+          const errorsObj = validate({
             values: values(),
             currentGroup: currentGroup(),
             formRecord,
           });
 
-          if (errors && Object.keys(errors).length > 0) {
-            setErrors(errors);
+          if (errorsObj && Object.keys(errorsObj).length > 0) {
+            setErrors(errorsObj);
             scrollToErrorSummary();
             return;
           }
@@ -124,18 +129,22 @@ export function Form() {
           setErrors({});
 
           const nextAction = getNextAction();
-          if (nextAction.next) {
-            updateCurrentGroup(nextAction.next);
-          } else {
+
+          console.log("Next Action:", nextAction);
+
+          if (nextAction.next === "review" || nextAction.next === "end") {
             // Navigate to submit page when no next action
             navigate("/confirm");
+          } else {
+            updateCurrentGroup(nextAction.next);
           }
 
           // Focus H1
-          const heading = document.querySelector("gcds-heading");
+          const heading = document.querySelector(
+            "gcds-heading"
+          ) as HTMLElement | null;
           if (heading) {
             heading.scrollIntoView({ behavior: "smooth" });
-            // focus H1
             heading.focus();
           }
         }}

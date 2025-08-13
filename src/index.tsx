@@ -2,13 +2,16 @@ import { Router, Route } from "@solidjs/router";
 
 /* @refresh reload */
 import { render } from "solid-js/web";
+import type { ParentComponent } from "solid-js";
 
 import "./index.css";
 
 import { Form } from "./pages/Form";
 import { Confirm } from "./pages/Confirm";
 
-const Layout = (props) => {
+const app = document.getElementById("root") as HTMLElement;
+
+const Layout: ParentComponent = (props) => {
   return (
     <>
       <div>
@@ -39,5 +42,5 @@ render(
       <Route path="/confirm" component={Confirm} />
     </Router>
   ),
-  document.getElementById("root")
+  app
 );
