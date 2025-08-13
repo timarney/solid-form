@@ -11,13 +11,14 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "typescript": "^5.7.2",
-    "vite": "^6.0.0",
-    "vite-plugin-solid": "^2.11.6"
+    "typescript": "^5.9.2",
+    "vite": "^6.3.5",
+    "vite-plugin-solid": "^2.11.8"
   },
   "dependencies": {
-    "@gcforms/types": "^1.0.13",
+    "@gcforms/core": "^1.0.0",
+    "@gcforms/types": "^1.0.15",
     "@solidjs/router": "^0.15.3",
-    "solid-js": "^1.9.5"
+    "solid-js": "^1.9.9"
   }
 }

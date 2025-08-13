@@ -1,10 +1,7 @@
 import { createEffect, createSignal, For, Show } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import type { FormElement } from "@gcforms/types";
-
-/* Helpers */
-import { parseTemplate } from "../lib/parseTemplate";
-import { checkVisibilityRecursive } from "../lib/visibility";
+import { checkVisibilityRecursive } from "@gcforms/core/visibility";
 
 /* Data */
 import { formRecord, grouped, template } from "../store/store";
@@ -12,13 +9,14 @@ import { formRecord, grouped, template } from "../store/store";
 /* Components */
 import { ElementRenderer } from "../components/ElementRenderer";
 
-/* Process data */
-import { validate } from "../lib/process";
 
+/* Helpers */
 import {
   scrollToErrorSummary,
   getValueFromEvent,
-} from "../lib/helpers/helpers";
+  parseTemplate,
+  validate
+} from "../lib/helpers";
 
 /* Signals */
 const [values, setValues] = createSignal({});
