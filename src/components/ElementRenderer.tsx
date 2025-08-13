@@ -29,7 +29,7 @@ export function ElementRenderer({
       return (
         <gcds-input
           error-message={error ? error() : null}
-          id={element.id}
+          id={`el-${element.id}`}
           input-id={element.id}
           label={properties.titleEn}
           value={value || ""}
@@ -40,6 +40,7 @@ export function ElementRenderer({
       return (
         <gcds-textarea
           error-message={error ? error() : null}
+          id={`el-${element.id}`}
           input-id={element.id}
           textarea-id={element.id}
           name={element.id}
@@ -52,6 +53,7 @@ export function ElementRenderer({
     case "radio":
       return (
         <gcds-radios
+          id={`el-${element.id}`}
           error-message={error ? error() : null}
           value={value || ""}
           input-id={element.id}

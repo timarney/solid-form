@@ -1,4 +1,4 @@
-import { createSignal, For, Show } from "solid-js";
+import { createEffect, createSignal, For, Show } from "solid-js";
 import type { FormElement } from "@gcforms/types";
 
 /* Helpers */
@@ -19,14 +19,26 @@ const [values, setValues] = createSignal({});
 const [currentGroup, setCurrentGroup] = createSignal("start");
 const [errors, setErrors] = createSignal<Record<string, unknown>>({});
 
+const scrollToErrorSummary = () => {
+  const errorSummary = document.getElementById("error-summary");
+  if (errorSummary) {
+    const rect = errorSummary.getBoundingClientRect();
+    const scrollTop = window.pageYOffset + rect.top - 20;
+    window.scrollTo({ top: scrollTop, behavior: "smooth" });
+  }
+};
+
 export function Form() {
   const updateValue = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const id = target.id;
+
+    const cleanId = id.replace("el-", "");
+
     const value = target.value;
     setValues((prevValues) => ({
       ...prevValues,
-      [id]: value,
+      [cleanId]: value,
     }));
   };
 
@@ -44,6 +56,22 @@ export function Form() {
     return { next: nextGroup, text: nextGroup ? "Next" : "Submit" };
   };
 
+  const mappedErrors = () => {
+    return Object.keys(errors()).reduce(
+      (acc, key) => ({
+        ...acc,
+        [`#el-${key}`]: errors()[key],
+      }),
+      {}
+    );
+  };
+
+  createEffect(() => {
+    console.log("Form Values:", values());
+    console.log("Errors:", errors());
+    console.log("Mapped Errors:", mappedErrors());
+  });
+
   const { elementMap } = parseTemplate(template);
 
   return (
@@ -51,7 +79,11 @@ export function Form() {
       <h1>{grouped[currentGroup()]?.group?.titleEn || "Form Title"}</h1>
       <div>
         <Show when={errors() && Object.keys(errors()).length > 0}>
-          <gcds-error-summary error-links={errors()} />
+          <gcds-error-summary
+            id="error-summary"
+            error-links={mappedErrors()}
+            listen={true}
+          />
         </Show>
       </div>
       <For
@@ -91,8 +123,12 @@ export function Form() {
 
           if (errors && Object.keys(errors).length > 0) {
             setErrors(errors);
+            scrollToErrorSummary();
             return;
           }
+
+          // reset errors
+          setErrors({});
 
           updateCurrentGroup(getNextAction().next);
         }}
