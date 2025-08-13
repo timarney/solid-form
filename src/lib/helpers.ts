@@ -1,4 +1,4 @@
-import { Responses, PublicFormRecord } from "@gcforms/types";
+import { Responses, PublicFormRecord, FormElement } from "@gcforms/types";
 import { validateOnSubmit } from "@gcforms/core/process";
 
 export const scrollToErrorSummary = () => {
@@ -14,13 +14,9 @@ export const getValueFromEvent = (e: Event) => {
   const target = e.target as HTMLInputElement;
   const id = target.id;
   const cleanId = id.replace("el-", "");
-
   const value = target.value;
-
   return { id: cleanId, value };
 };
-
-import type { FormElement } from "@gcforms/types";
 
 export function getFormRecord(template: any) {
   const formRecord: any = {
